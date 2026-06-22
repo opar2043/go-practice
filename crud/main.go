@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	_ "github.com/jackc/pgx/v5"
 )
 
 type User struct {
@@ -34,7 +35,7 @@ func main() {
 	mux.HandleFunc("POST /create", createHandler)
 	mux.HandleFunc("GET /users", getUsersHandler)
 	mux.HandleFunc("GET /users/{id}", getSingleUserHandler)
-	mux.HandleFunc("PUT /users/{id}", updateUserHandler)
+	// mux.HandleFunc("PUT /users/{id}", updateUserHandler)
 	mux.HandleFunc("DELETE /users/{id}", deleteUserHandler)
 
 	fmt.Println("Server is running port 5000")
@@ -99,36 +100,36 @@ func getSingleUserHandler(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, "User not found", http.StatusNotFound)
 }
 
-func updateUserHandler(w http.ResponseWriter, r *http.Request) {
-	idParam := r.PathValue("id")
-	id, err := strconv.Atoi(idParam)
-	if err != nil {
-		http.Error(w, "Invalid user ID", http.StatusBadRequest)
-		return
-	}
+// func updateUserHandler(w http.ResponseWriter, r *http.Request) {
+// 	idParam := r.PathValue("id")
+// 	id, err := strconv.Atoi(idParam)
+// 	if err != nil {
+// 		http.Error(w, "Invalid user ID", http.StatusBadRequest)
+// 		return
+// 	}
 
-	var updatedUser User
+// 	var updatedUser User
 
-	err = json.NewDecoder(r.Body).Decode(&updatedUser)
-		if err != nil {
-		w.WriteHeader(403)
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
-		return
-	}
+// 	err = json.NewDecoder(r.Body).Decode(&updatedUser)
+// 		if err != nil {
+// 		w.WriteHeader(403)
+// 		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+// 		return
+// 	}
 
-	for idx , user := range users {
-		user.Id == id{
-			updatedUser.Id == id
-			updatedUser.Id = updatedUser
+// 	for idx , user := range users {
+// 		user.Id == id{
+// 			updatedUser.Id == id
+// 			users[idx] = updatedUser
 
-			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(updatedUser)
-			return
-		}
-	}
+// 			w.Header().Set("Content-Type", "application/json")
+// 			json.NewEncoder(w).Encode(updatedUser)
+// 			return
+// 		}
+// 	}
     
-	http.Error(w, "User not found", http.StatusNotFound)
-}
+// 	http.Error(w, "User not found", http.StatusNotFound)
+// }
 
 func deleteUserHandler(w http.ResponseWriter, r *http.Request) {
 	idParam := r.PathValue("id")
@@ -140,7 +141,8 @@ func deleteUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	for i, user := range users {
 		if user.Id == id {
-			users = append(users[:i], users[i+1:]...)
+			// users = append(users[:i], users[i+1:]...)
+			users = append(users[:i] , users[i+1:]...)
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(map[string]string{"message": "User deleted"})
 			return
